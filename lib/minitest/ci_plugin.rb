@@ -132,7 +132,7 @@ module Minitest
 
       results.each do |result|
         xml << "  <testcase time='%6f' file=%p name=%p assertions='%s'>" %
-          [result.time, escape(result.method(result.name).source_location[0].gsub(base, '')), escape(result.name), result.assertions]
+          [result.time.to_i, escape(result.method(result.name).source_location[0].gsub(base, '')), escape(result.name), result.assertions]
         if failure = result.failure
           label = failure.result_label.downcase
 
