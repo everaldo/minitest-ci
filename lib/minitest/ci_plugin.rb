@@ -110,8 +110,8 @@ module Minitest
       total_time = assertions = errors = failures = skips = 0
       timestamp = Time.now.iso8601
       results.each do |result|
-        total_time += result.time
-        assertions += result.assertions
+        total_time += result.time.to_i
+        assertions += result.assertions.to_i
 
         case result.failure
         when Skip
