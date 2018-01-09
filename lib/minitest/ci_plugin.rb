@@ -1,6 +1,8 @@
 require 'fileutils'
 require 'cgi'
 require 'time'
+require 'digest'
+
 
 module Minitest
   def self.plugin_ci_options opts, options
@@ -82,7 +84,8 @@ module Minitest
     end
 
     def record result
-      results[result.class] << result
+      key = result.respond_to?(:klass) ? result.klass : result.class
+      results[key] << result
     end
 
     ##
@@ -131,8 +134,13 @@ module Minitest
         [total_time, skips, failures, errors, escape(name), assertions, results.count, timestamp]
 
       results.each do |result|
+        location = if result.respond_to? :source_location then
+                    result.source_location
+                   else
+                    result.method(result.name).source_location
+                   end[0].gsub(base, '')
         xml << "  <testcase time='%6f' file=%p name=%p assertions='%s'>" %
-          [result.time.to_i, escape(result.method(result.name).source_location[0].gsub(base, '')), escape(result.name), result.assertions]
+          [result.time.to_i, escape(location), escape(result.name), result.assertions]
         if failure = result.failure
           label = failure.result_label.downcase
 
